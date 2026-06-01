@@ -1,0 +1,23 @@
+# Ambiente virtual
+venv/
+
+# Variáveis secretas
+.env
+
+# Cache Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Banco vetorial (grande demais para o Git)
+rag/chroma_db/
+
+# PDFs dos documentos (opcionais - podem ser pesados)
+rag/documentos/
+
+# VSCode
+.vscode/
+
+# Windows
+Thumbs.db
+desktop.ini
