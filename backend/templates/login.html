@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zana AI — Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: url('/static/images/bg-farm.jpg') center/cover no-repeat;
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0,40,0,0.8), rgba(0,60,20,0.7));
+        }
+
+        .card {
+            position: relative;
+            z-index: 1;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.3);
+            margin: 0 auto 12px;
+            overflow: hidden;
+        }
+
+        .logo-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .logo p {
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+            margin-top: 4px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 28px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.6);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: transparent;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .tab.active {
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+        }
+
+        /* Forms */
+        .form { display: none; }
+        .form.active { display: block; }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 13px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .field input:focus {
+            border-color: rgba(74, 222, 128, 0.6);
+        }
+
+        .field input::placeholder {
+            color: rgba(255,255,255,0.3);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(22, 163, 74, 0.5);
+        }
+
+        .mensagem-erro {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .mensagem-sucesso {
+            background: rgba(74, 222, 128, 0.2);
+            border: 1px solid rgba(74, 222, 128, 0.4);
+            color: #86efac;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+
+    <div class="card">
+        <div class="logo">
+            <div class="logo-avatar">
+                <img src="/static/images/zana-avatar.png" alt="Zana">
+            </div>
+            <h1>Zana AI</h1>
+            <p>Assistente de Decisão Agronômica</p>
+        </div>
+
+        <!-- Tabs Login / Cadastro -->
+        <div class="tabs">
+            <button class="tab active" onclick="trocarTab('login')">Entrar</button>
+            <button class="tab" onclick="trocarTab('cadastro')">Cadastrar</button>
+        </div>
+
+        <!-- Mensagens -->
+        <div class="mensagem-erro" id="msg-erro"></div>
+        <div class="mensagem-sucesso" id="msg-sucesso"></div>
+
+        <!-- Formulário de Login -->
+        <div class="form active" id="form-login">
+            <div class="field">
+                <label>Email</label>
+                <input type="email" id="login-email" placeholder="seu@email.com">
+            </div>
+            <div class="field">
+                <label>Senha</label>
+                <input type="password" id="login-senha" placeholder="••••••••"
+                       onkeydown="if(event.key==='Enter') fazerLogin()">
+            </div>
+            <button class="btn-submit" onclick="fazerLogin()">Entrar na Zana AI</button>
+        </div>
+
+        <!-- Formulário de Cadastro -->
+        <div class="form" id="form-cadastro">
+            <div class="field">
+                <label>Nome completo</label>
+                <input type="text" id="cadastro-nome" placeholder="Seu nome">
+            </div>
+            <div class="field">
+                <label>Email</label>
+                <input type="email" id="cadastro-email" placeholder="seu@email.com">
+            </div>
+            <div class="field">
+                <label>Senha</label>
+                <input type="password" id="cadastro-senha" placeholder="Mínimo 6 caracteres"
+                       onkeydown="if(event.key==='Enter') fazerCadastro()">
+            </div>
+            <button class="btn-submit" onclick="fazerCadastro()">Criar conta grátis</button>
+        </div>
+    </div>
+
+    <script>
+        function trocarTab(tab) {
+            document.querySelectorAll('.tab').forEach((t, i) => {
+                t.classList.toggle('active', (i === 0) === (tab === 'login'));
+            });
+            document.getElementById('form-login').classList.toggle('active', tab === 'login');
+            document.getElementById('form-cadastro').classList.toggle('active', tab === 'cadastro');
+            esconderMensagens();
+        }
+
+        function mostrarErro(msg) {
+            const el = document.getElementById('msg-erro');
+            el.textContent = msg;
+            el.style.display = 'block';
+            document.getElementById('msg-sucesso').style.display = 'none';
+        }
+
+        function mostrarSucesso(msg) {
+            const el = document.getElementById('msg-sucesso');
+            el.textContent = msg;
+            el.style.display = 'block';
+            document.getElementById('msg-erro').style.display = 'none';
+        }
+
+        function esconderMensagens() {
+            document.getElementById('msg-erro').style.display = 'none';
+            document.getElementById('msg-sucesso').style.display = 'none';
+        }
+
+        async function fazerLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const senha = document.getElementById('login-senha').value;
+            if (!email || !senha) return mostrarErro('Preencha todos os campos');
+
+            const res = await fetch('/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, senha })
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                mostrarSucesso(data.mensagem);
+                setTimeout(() => window.location.href = '/', 1000);
+            } else {
+                mostrarErro(data.detail || 'Erro ao fazer login');
+            }
+        }
+
+        async function fazerCadastro() {
+            const nome = document.getElementById('cadastro-nome').value.trim();
+            const email = document.getElementById('cadastro-email').value.trim();
+            const senha = document.getElementById('cadastro-senha').value;
+
+            if (!nome || !email || !senha)
+                return mostrarErro('Preencha todos os campos');
+            if (senha.length < 6)
+                return mostrarErro('Senha deve ter pelo menos 6 caracteres');
+
+            const res = await fetch('/auth/cadastro', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome, email, senha })
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                mostrarSucesso(data.mensagem);
+                setTimeout(() => window.location.href = '/', 1000);
+            } else {
+                mostrarErro(data.detail || 'Erro ao cadastrar');
+            }
+        }
+    </script>
+</body>
+</html>
