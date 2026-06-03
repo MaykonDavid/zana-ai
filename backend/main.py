@@ -3,20 +3,25 @@
 import os
 import sys
 
-# Caminho absoluto da pasta backend
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# Adiciona a raiz do projeto ao path
 sys.path.insert(0, os.path.dirname(BASE_DIR))
 
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from ai_service.agent import perguntar_zana
 
 app = FastAPI(title="Zana AI — Assistente Agronômica")
 
-# Caminho absoluto para a pasta templates
+# Servindo arquivos estáticos (CSS, JS, imagens)
+app.mount(
+    "/static",
+    StaticFiles(directory=os.path.join(BASE_DIR, "static")),
+    name="static"
+)
+
 templates = Jinja2Templates(
     directory=os.path.join(BASE_DIR, "templates")
 )
