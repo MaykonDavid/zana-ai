@@ -1,10 +1,10 @@
-# 🌾 Zana AI — Assistente de Decisão Agronômica
+#  Zana AI — Assistente de Decisões Agronômicas
 
 Assistente agronômica inteligente que combina dados operacionais da fazenda 
 com IA para responder perguntas como *"Qual talhão está em risco de seca?"* 
 ou *"Qual a dose recomendada de glifosato para soja?"*.
 
-## 🏗️ Arquitetura
+##  Arquitetura
 
 [Interface Web] → [FastAPI Backend] → [Agente LangGraph]
 ↓
@@ -14,7 +14,7 @@ ou *"Qual a dose recomendada de glifosato para soja?"*.
 ↓                            ↓
 [PostgreSQL DB]          [Manuais e Bulas PDF]
 
-## 🛠️ Tecnologias
+##  Tecnologias
 
 | Camada | Tecnologia |
 |--------|-----------|
@@ -26,7 +26,7 @@ ou *"Qual a dose recomendada de glifosato para soja?"*.
 | Busca Semântica | ChromaDB + SentenceTransformers |
 | RAG | LangChain Community |
 
-## 📁 Estrutura do Projeto
+##  Estrutura do Projeto
 
 zana_ai/
 ├── ai_service/          # Agente LangGraph e ferramentas
@@ -50,7 +50,7 @@ zana_ai/
 ├── .env                 # Variáveis de ambiente (não commitado)
 └── requirements.txt     # Dependências do projeto
 
-## ⚙️ Como Executar
+##  Como Executar
 
 ### Pré-requisitos
 - Python 3.11+
@@ -104,7 +104,7 @@ uvicorn backend.main:app --reload --port 8000
 
 Acesse **http://localhost:8000** no navegador.
 
-## 💡 Exemplos de Uso
+##  Exemplos de Uso
 
 - *"Quais talhões temos na fazenda?"*
 - *"Existe algum talhão em risco de seca agora?"*
@@ -112,8 +112,9 @@ Acesse **http://localhost:8000** no navegador.
 - *"Como controlar a ferrugem asiática na soja?"*
 - *"Me dê detalhes do talhão 1"*
 
-## 🔮 Próximos Passos
+##  Próximos Passos
 
+- [ ] Nova interface
 - [ ] Autenticação de usuários
 - [ ] Dashboard com gráficos de NDVI
 - [ ] Integração com APIs de clima em tempo real
