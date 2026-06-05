@@ -30,6 +30,12 @@ templates = Jinja2Templates(
 # Registra as rotas de autenticação
 app.include_router(auth_router)
 
+from backend.routes.propriedades import router as prop_router
+from backend.routes.manejos import router as manejo_router
+
+app.include_router(prop_router)
+app.include_router(manejo_router)
+
 class MensagemChat(BaseModel):
     pergunta: str
 
@@ -56,6 +62,15 @@ async def pagina_chat(request: Request, zana_token: str = Cookie(None)):
         request=request,
         name="chat.html",
         context={"usuario_email": payload.get("email")}
+    )
+
+# ── Rota da Fazenda ─────────────────────────────────────────────────
+@app.get("/fazenda", response_class=HTMLResponse)
+async def pagina_fazenda(request: Request, zana_token: str = Cookie(None)):
+    if not zana_token or not verificar_token(zana_token):
+        return RedirectResponse(url="/login")
+    return templates.TemplateResponse(
+        request=request, name="fazenda.html"
     )
 
 # ── Rota do chat ─────────────────────────────────────────────────

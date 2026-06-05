@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zana AI — Minha Fazenda</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a1a0a; color: #e8f5e9; min-height: 100vh; }
+
+        .header {
+            background: #1b3a1b;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #2e7d32;
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .logo { font-size: 24px; font-weight: 700; color: #a5d6a7; }
+        .logo span { color: #fff; }
+
+        .header-nav { display: flex; gap: 8px; }
+        .nav-btn {
+            padding: 8px 16px; border-radius: 20px; border: none;
+            font-size: 13px; font-weight: 500; cursor: pointer;
+            font-family: 'Inter', sans-serif; transition: all 0.2s;
+        }
+        .nav-btn.active { background: #2e7d32; color: #fff; }
+        .nav-btn.outline {
+            background: transparent; color: #a5d6a7;
+            border: 1px solid #2e7d32;
+        }
+        .nav-btn.outline:hover { background: #2e7d32; color: #fff; }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 32px 16px; }
+
+        .section-title {
+            font-size: 20px; font-weight: 700; color: #a5d6a7;
+            margin-bottom: 20px; display: flex;
+            align-items: center; gap: 10px;
+        }
+
+        .btn-add {
+            background: #2e7d32; color: #fff; border: none;
+            padding: 10px 20px; border-radius: 20px; font-size: 13px;
+            font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;
+            transition: all 0.2s; margin-left: auto;
+        }
+        .btn-add:hover { background: #388e3c; transform: translateY(-1px); }
+
+        /* Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px; margin-bottom: 32px;
+        }
+
+        .card {
+            background: #1b3a1b; border: 1px solid #2e7d32;
+            border-radius: 16px; padding: 20px;
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-2px); }
+
+        .card-title {
+            font-size: 16px; font-weight: 700; color: #fff;
+            margin-bottom: 8px; display: flex;
+            align-items: center; gap: 8px;
+        }
+
+        .card-info { font-size: 13px; color: #81c784; margin-bottom: 4px; }
+
+        .card-actions {
+            display: flex; gap: 8px; margin-top: 16px;
+        }
+
+        .btn-sm {
+            padding: 6px 14px; border-radius: 16px; border: none;
+            font-size: 12px; font-weight: 500; cursor: pointer;
+            font-family: 'Inter', sans-serif; transition: all 0.2s;
+        }
+
+        .btn-ver { background: #2e7d32; color: #fff; }
+        .btn-editar { background: rgba(255,255,255,0.1); color: #a5d6a7; }
+        .btn-apagar { background: rgba(239,68,68,0.2); color: #fca5a5; }
+        .btn-sm:hover { opacity: 0.85; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7); z-index: 200;
+            align-items: center; justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+
+        .modal {
+            background: #1b3a1b; border: 1px solid #2e7d32;
+            border-radius: 20px; padding: 32px;
+            width: 100%; max-width: 480px; max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            font-size: 18px; font-weight: 700; color: #a5d6a7;
+            margin-bottom: 24px;
+        }
+
+        .field { margin-bottom: 16px; }
+        .field label {
+            display: block; font-size: 12px; color: #81c784;
+            margin-bottom: 6px; font-weight: 500; text-transform: uppercase;
+        }
+        .field input, .field select {
+            width: 100%; padding: 10px 14px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid #2e7d32; border-radius: 10px;
+            color: #fff; font-size: 14px; font-family: 'Inter', sans-serif;
+            outline: none;
+        }
+        .field input:focus { border-color: #66bb6a; }
+
+        .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        .modal-actions { display: flex; gap: 10px; margin-top: 24px; }
+
+        .btn-salvar {
+            flex: 1; padding: 12px; background: #2e7d32; color: #fff;
+            border: none; border-radius: 12px; font-size: 14px;
+            font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;
+        }
+
+        .btn-cancelar {
+            flex: 1; padding: 12px;
+            background: rgba(255,255,255,0.07); color: #a5d6a7;
+            border: 1px solid #2e7d32; border-radius: 12px;
+            font-size: 14px; cursor: pointer; font-family: 'Inter', sans-serif;
+        }
+
+        .empty-state {
+            text-align: center; padding: 48px;
+            color: #4a7c4a; font-size: 15px;
+        }
+        .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+
+        .tag {
+            display: inline-block; padding: 2px 10px;
+            border-radius: 10px; font-size: 11px; font-weight: 600;
+            background: rgba(74,222,128,0.15); color: #4ade80;
+            margin-left: auto;
+        }
+
+        .previsao {
+            font-size: 12px; color: #ffb74d;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="header-left">
+        <div class="logo">🌾 Zana <span>AI</span></div>
+    </div>
+    <div class="header-nav">
+        <button class="nav-btn outline" onclick="window.location.href='/'">
+            💬 Chat
+        </button>
+        <button class="nav-btn active">🏡 Fazenda</button>
+        <button class="nav-btn outline" onclick="logout()">Sair</button>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Propriedades -->
+    <div style="display:flex; align-items:center; margin-bottom:20px">
+        <div class="section-title" style="margin:0">🏡 Minhas Propriedades</div>
+        <button class="btn-add" onclick="abrirModalPropriedade()">
+            + Nova Propriedade
+        </button>
+    </div>
+
+    <div class="cards-grid" id="lista-propriedades">
+        <div class="empty-state">
+            <div class="icon">🌾</div>
+            <p>Carregando propriedades...</p>
+        </div>
+    </div>
+
+    <!-- Talhões da propriedade selecionada -->
+    <div id="secao-talhoes" style="display:none">
+        <div style="display:flex; align-items:center; margin-bottom:20px">
+            <div class="section-title" style="margin:0">
+                🗺️ Talhões — <span id="nome-prop-selecionada" style="color:#fff"></span>
+            </div>
+            <button class="btn-add" onclick="abrirModalTalhao()">
+                + Novo Talhão
+            </button>
+        </div>
+        <div class="cards-grid" id="lista-talhoes"></div>
+    </div>
+
+    <!-- Manejos do talhão selecionado -->
+    <div id="secao-manejos" style="display:none">
+        <div style="display:flex; align-items:center; margin-bottom:20px">
+            <div class="section-title" style="margin:0">
+                🚜 Manejos — <span id="nome-talhao-selecionado" style="color:#fff"></span>
+            </div>
+            <button class="btn-add" onclick="abrirModalManejo()">
+                + Novo Manejo
+            </button>
+        </div>
+        <div class="cards-grid" id="lista-manejos"></div>
+    </div>
+
+</div>
+
+<!-- Modal Propriedade -->
+<div class="modal-overlay" id="modal-propriedade">
+    <div class="modal">
+        <h3>🏡 Nova Propriedade</h3>
+        <div class="field">
+            <label>Nome da Propriedade *</label>
+            <input type="text" id="prop-nome" placeholder="Ex: Fazenda Santa Cruz">
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Cidade</label>
+                <input type="text" id="prop-cidade" placeholder="Ex: Barreiras">
+            </div>
+            <div class="field">
+                <label>Estado</label>
+                <input type="text" id="prop-estado" placeholder="BA" maxlength="2">
+            </div>
+        </div>
+        <div class="field">
+            <label>Área Total (hectares)</label>
+            <input type="number" id="prop-area" placeholder="Ex: 500">
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Latitude</label>
+                <input type="number" id="prop-lat" placeholder="-12.5" step="0.0001">
+            </div>
+            <div class="field">
+                <label>Longitude</label>
+                <input type="number" id="prop-lng" placeholder="-45.2" step="0.0001">
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancelar" onclick="fecharModais()">Cancelar</button>
+            <button class="btn-salvar" onclick="salvarPropriedade()">Salvar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Talhão -->
+<div class="modal-overlay" id="modal-talhao">
+    <div class="modal">
+        <h3>🗺️ Novo Talhão</h3>
+        <div class="field">
+            <label>Nome do Talhão *</label>
+            <input type="text" id="tal-nome" placeholder="Ex: Talhão Norte A">
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Cultura</label>
+                <input type="text" id="tal-cultura" placeholder="Ex: Soja">
+            </div>
+            <div class="field">
+                <label>Área (hectares)</label>
+                <input type="number" id="tal-area" placeholder="Ex: 45.5">
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Data de Plantio</label>
+                <input type="date" id="tal-plantio">
+            </div>
+            <div class="field">
+                <label>Dias do Ciclo</label>
+                <input type="number" id="tal-ciclo" placeholder="Ex: 120">
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Latitude</label>
+                <input type="number" id="tal-lat" placeholder="-12.5" step="0.0001">
+            </div>
+            <div class="field">
+                <label>Longitude</label>
+                <input type="number" id="tal-lng" placeholder="-45.2" step="0.0001">
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancelar" onclick="fecharModais()">Cancelar</button>
+            <button class="btn-salvar" onclick="salvarTalhao()">Salvar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Manejo -->
+<div class="modal-overlay" id="modal-manejo">
+    <div class="modal">
+        <h3>🚜 Registrar Manejo</h3>
+        <div class="field">
+            <label>Data *</label>
+            <input type="date" id="man-data">
+        </div>
+        <div class="field">
+            <label>Tipo de Manejo *</label>
+            <select id="man-tipo">
+                <option value="">Selecione...</option>
+                <option value="Plantio">🌱 Plantio</option>
+                <option value="Adubação">🧪 Adubação</option>
+                <option value="Pulverização">💧 Pulverização</option>
+                <option value="Irrigação">🚿 Irrigação</option>
+                <option value="Colheita">🌾 Colheita</option>
+                <option value="Análise de Solo">🔬 Análise de Solo</option>
+                <option value="Outro">📋 Outro</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Produto utilizado</label>
+            <input type="text" id="man-produto" placeholder="Ex: Glifosato">
+        </div>
+        <div class="field">
+            <label>Dose / Quantidade</label>
+            <input type="text" id="man-dose" placeholder="Ex: 2L/ha">
+        </div>
+        <div class="field">
+            <label>Descrição / Observações</label>
+            <input type="text" id="man-descricao" placeholder="Detalhes do manejo">
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancelar" onclick="fecharModais()">Cancelar</button>
+            <button class="btn-salvar" onclick="salvarManejo()">Salvar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let propSelecionada = null;
+let talhaoSelecionado = null;
+
+// ── Propriedades ────────────────────────────────────────────────
+async function carregarPropriedades() {
+    const res = await fetch('/api/propriedades');
+    const props = await res.json();
+    const el = document.getElementById('lista-propriedades');
+
+    if (!props.length) {
+        el.innerHTML = `<div class="empty-state">
+            <div class="icon">🏡</div>
+            <p>Nenhuma propriedade cadastrada.<br>Clique em "+ Nova Propriedade" para começar!</p>
+        </div>`;
+        return;
+    }
+
+    el.innerHTML = props.map(p => `
+        <div class="card">
+            <div class="card-title">
+                🏡 ${p.nome}
+                <span class="tag">${p.total_talhoes} talhões</span>
+            </div>
+            <div class="card-info">📍 ${p.cidade || '—'} / ${p.estado || '—'}</div>
+            <div class="card-info">📐 ${p.area_total_hectares || '—'} ha</div>
+            <div class="card-actions">
+                <button class="btn-sm btn-ver" onclick="verTalhoes(${p.id}, '${p.nome}')">
+                    Ver Talhões
+                </button>
+                <button class="btn-sm btn-apagar" onclick="apagarPropriedade(${p.id})">
+                    Apagar
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function abrirModalPropriedade() {
+    document.getElementById('modal-propriedade').classList.add('open');
+}
+
+async function salvarPropriedade() {
+    const dados = {
+        nome: document.getElementById('prop-nome').value,
+        cidade: document.getElementById('prop-cidade').value,
+        estado: document.getElementById('prop-estado').value.toUpperCase(),
+        area_total_hectares: parseFloat(document.getElementById('prop-area').value) || null,
+        latitude: parseFloat(document.getElementById('prop-lat').value) || null,
+        longitude: parseFloat(document.getElementById('prop-lng').value) || null,
+    };
+    if (!dados.nome) return alert('Nome é obrigatório!');
+    await fetch('/api/propriedades', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(dados)
+    });
+    fecharModais();
+    carregarPropriedades();
+}
+
+async function apagarPropriedade(id) {
+    if (!confirm('Apagar esta propriedade e todos os seus talhões?')) return;
+    await fetch(`/api/propriedades/${id}`, {method: 'DELETE'});
+    document.getElementById('secao-talhoes').style.display = 'none';
+    carregarPropriedades();
+}
+
+// ── Talhões ─────────────────────────────────────────────────────
+async function verTalhoes(propId, propNome) {
+    propSelecionada = propId;
+    document.getElementById('nome-prop-selecionada').textContent = propNome;
+    document.getElementById('secao-talhoes').style.display = 'block';
+    document.getElementById('secao-manejos').style.display = 'none';
+    document.getElementById('secao-talhoes').scrollIntoView({behavior: 'smooth'});
+
+    const res = await fetch(`/api/propriedades/${propId}/talhoes`);
+    const talhoes = await res.json();
+    const el = document.getElementById('lista-talhoes');
+
+    if (!talhoes.length) {
+        el.innerHTML = `<div class="empty-state">
+            <div class="icon">🗺️</div>
+            <p>Nenhum talhão cadastrado nesta propriedade.</p>
+        </div>`;
+        return;
+    }
+
+    el.innerHTML = talhoes.map(t => {
+        let previsao = '';
+        if (t.data_plantio && t.dias_ciclo) {
+            const plantio = new Date(t.data_plantio);
+            const colheita = new Date(plantio);
+            colheita.setDate(colheita.getDate() + t.dias_ciclo);
+            previsao = `<div class="previsao">🌾 Colheita prevista: ${colheita.toLocaleDateString('pt-BR')}</div>`;
+        }
+        return `
+        <div class="card">
+            <div class="card-title">
+                🗺️ ${t.nome}
+                ${t.cultura ? `<span class="tag">${t.cultura}</span>` : ''}
+            </div>
+            <div class="card-info">📐 ${t.area_hectares || '—'} ha</div>
+            <div class="card-info">🌱 Plantio: ${t.data_plantio || '—'}</div>
+            ${previsao}
+            <div class="card-actions">
+                <button class="btn-sm btn-ver" onclick="verManejos(${t.id}, '${t.nome}')">
+                    Manejos
+                </button>
+                <button class="btn-sm btn-apagar" onclick="apagarTalhao(${t.id})">
+                    Apagar
+                </button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function abrirModalTalhao() {
+    document.getElementById('modal-talhao').classList.add('open');
+}
+
+async function salvarTalhao() {
+    const dados = {
+        nome: document.getElementById('tal-nome').value,
+        cultura: document.getElementById('tal-cultura').value,
+        area_hectares: parseFloat(document.getElementById('tal-area').value) || null,
+        data_plantio: document.getElementById('tal-plantio').value || null,
+        dias_ciclo: parseInt(document.getElementById('tal-ciclo').value) || null,
+        latitude: parseFloat(document.getElementById('tal-lat').value) || null,
+        longitude: parseFloat(document.getElementById('tal-lng').value) || null,
+    };
+    if (!dados.nome) return alert('Nome é obrigatório!');
+    await fetch(`/api/propriedades/${propSelecionada}/talhoes`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(dados)
+    });
+    fecharModais();
+    verTalhoes(propSelecionada,
+        document.getElementById('nome-prop-selecionada').textContent);
+}
+
+async function apagarTalhao(id) {
+    if (!confirm('Apagar este talhão?')) return;
+    await fetch(`/api/talhoes/${id}`, {method: 'DELETE'});
+    verTalhoes(propSelecionada,
+        document.getElementById('nome-prop-selecionada').textContent);
+}
+
+// ── Manejos ─────────────────────────────────────────────────────
+async function verManejos(talhaoId, talhaoNome) {
+    talhaoSelecionado = talhaoId;
+    document.getElementById('nome-talhao-selecionado').textContent = talhaoNome;
+    document.getElementById('secao-manejos').style.display = 'block';
+    document.getElementById('secao-manejos').scrollIntoView({behavior: 'smooth'});
+
+    const res = await fetch(`/api/talhoes/${talhaoId}/manejos`);
+    const manejos = await res.json();
+    const el = document.getElementById('lista-manejos');
+
+    if (!manejos.length) {
+        el.innerHTML = `<div class="empty-state">
+            <div class="icon">🚜</div>
+            <p>Nenhum manejo registrado neste talhão.</p>
+        </div>`;
+        return;
+    }
+
+    el.innerHTML = manejos.map(m => `
+        <div class="card">
+            <div class="card-title">🚜 ${m.tipo}</div>
+            <div class="card-info">📅 ${m.data}</div>
+            <div class="card-info">🧪 ${m.produto || '—'} ${m.dose ? '• ' + m.dose : ''}</div>
+            <div class="card-info">📝 ${m.descricao || '—'}</div>
+            <div class="card-actions">
+                <button class="btn-sm btn-apagar" onclick="apagarManejo(${m.id})">
+                    Apagar
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function abrirModalManejo() {
+    document.getElementById('modal-manejo').classList.add('open');
+}
+
+async function salvarManejo() {
+    const dados = {
+        data: document.getElementById('man-data').value,
+        tipo: document.getElementById('man-tipo').value,
+        produto: document.getElementById('man-produto').value,
+        dose: document.getElementById('man-dose').value,
+        descricao: document.getElementById('man-descricao').value,
+    };
+    if (!dados.data || !dados.tipo) return alert('Data e tipo são obrigatórios!');
+    await fetch(`/api/talhoes/${talhaoSelecionado}/manejos`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(dados)
+    });
+    fecharModais();
+    verManejos(talhaoSelecionado,
+        document.getElementById('nome-talhao-selecionado').textContent);
+}
+
+async function apagarManejo(id) {
+    if (!confirm('Apagar este manejo?')) return;
+    await fetch(`/api/manejos/${id}`, {method: 'DELETE'});
+    verManejos(talhaoSelecionado,
+        document.getElementById('nome-talhao-selecionado').textContent);
+}
+
+// ── Utilitários ─────────────────────────────────────────────────
+function fecharModais() {
+    document.querySelectorAll('.modal-overlay').forEach(m =>
+        m.classList.remove('open'));
+}
+
+async function logout() {
+    await fetch('/auth/logout', {method: 'POST'});
+    window.location.href = '/login';
+}
+
+// Fecha modal clicando fora
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+        if (e.target === overlay) fecharModais();
+    });
+});
+
+// Inicializa
+carregarPropriedades();
+</script>
+</body>
+</html>

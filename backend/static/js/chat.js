@@ -80,3 +80,8 @@ function enviarSugestao(btn) {
     inputEl.value = btn.textContent.trim().replace(/^[^\w]+/, '');
     enviar();
 }
+
+async function logout() {
+    await fetch('/auth/logout', {method: 'POST'});
+    window.location.href = '/login';
+}
