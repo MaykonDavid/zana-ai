@@ -2,6 +2,8 @@ import requests
 import os
 import sys
 from langchain_core.tools import tool
+from backend.services.clima_service import buscar_clima_atual, buscar_previsao_5dias
+
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from rag.buscar_documentos import buscar_em_documentos
@@ -114,3 +116,19 @@ def consultar_documentos_tecnicos(pergunta: str) -> str:
     que não estão nos dados do banco.
     """
     return buscar_em_documentos(pergunta)
+
+@tool
+def buscar_clima_talhao(coordenadas: str) -> str:
+    """
+    Busca o clima atual e previsão para os próximos 5 dias de um talhão.
+    Use quando o usuário perguntar sobre clima, temperatura, chuva,
+    condições meteorológicas ou momento ideal para pulverização/plantio.
+    Parâmetro: 'latitude,longitude' como string. Ex: '-12.5,-45.2'
+    """
+    try:
+        lat, lon = map(float, coordenadas.split(","))
+        clima = buscar_clima_atual(lat, lon)
+        previsao = buscar_previsao_5dias(lat, lon)
+        return f"Clima atual: {clima}\nPrevisão 5 dias: {previsao}"
+    except Exception as e:
+        return f"Erro ao buscar clima: {str(e)}"

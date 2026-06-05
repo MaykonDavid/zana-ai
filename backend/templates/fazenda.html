@@ -452,6 +452,9 @@ async function verTalhoes(propId, propNome) {
                 <button class="btn-sm btn-ver" onclick="verManejos(${t.id}, '${t.nome}')">
                     Manejos
                 </button>
+                <button class="btn-sm btn-ver" onclick="verClima(${t.id}, '${t.nome}')">
+                    🌤️ Clima
+                </button>
                 <button class="btn-sm btn-apagar" onclick="apagarTalhao(${t.id})">
                     Apagar
                 </button>
@@ -565,6 +568,37 @@ function fecharModais() {
 async function logout() {
     await fetch('/auth/logout', {method: 'POST'});
     window.location.href = '/login';
+}
+
+// ── Clima ─────────────────────────────────────────────────
+async function verClima(talhaoId, talhaoNome) {
+    const res = await fetch(`/api/talhoes/${talhaoId}/clima`);
+
+    if (!res.ok) {
+        const err = await res.json();
+        alert(`⚠️ ${err.detail}`);
+        return;
+    }
+
+    const data = await res.json();
+    const c = data.clima_atual;
+
+    // Monta previsão em texto
+    const previsao = data.previsao_5dias.map(d =>
+        `📅 ${d.data}: ${d.temp_min}°C ~ ${d.temp_max}°C | 🌧️ ${d.chuva_mm.toFixed(1)}mm`
+    ).join('\n');
+
+    alert(`🌤️ Clima — ${talhaoNome}
+
+🌡️ Temperatura: ${c.temperatura}°C (sensação ${c.sensacao_termica}°C)
+📊 Máx: ${c.temperatura_max}°C | Mín: ${c.temperatura_min}°C
+💧 Umidade: ${c.umidade}%
+🌧️ Chuva última hora: ${c.chuva_mm}mm
+💨 Vento: ${c.vento_kmh} km/h
+☁️ ${c.descricao}
+
+📆 Previsão 5 dias:
+${previsao}`);
 }
 
 // Fecha modal clicando fora

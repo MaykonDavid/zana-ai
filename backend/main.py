@@ -32,9 +32,11 @@ app.include_router(auth_router)
 
 from backend.routes.propriedades import router as prop_router
 from backend.routes.manejos import router as manejo_router
+from backend.routes.clima import router as clima_router
 
 app.include_router(prop_router)
 app.include_router(manejo_router)
+app.include_router(clima_router)
 
 class MensagemChat(BaseModel):
     pergunta: str

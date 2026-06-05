@@ -5,7 +5,12 @@ from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage
 from langgraph.prebuilt import create_react_agent
-from ai_service.tools import buscar_todos_talhoes, buscar_alertas_seca, buscar_talhao_por_id
+from ai_service.tools import (buscar_todos_talhoes, 
+                              buscar_alertas_seca, 
+                              buscar_talhao_por_id, 
+                              consultar_documentos_tecnicos, 
+                              buscar_clima_talhao
+)
 
 load_dotenv()
 
@@ -21,7 +26,9 @@ llm = ChatGroq(
 tools = [
     buscar_todos_talhoes,
     buscar_alertas_seca,
-    buscar_talhao_por_id
+    buscar_talhao_por_id,
+    consultar_documentos_tecnicos,
+    buscar_clima_talhao
 ]
 
 # ── Personalidade da Zana ────────────────────────────────────────
